@@ -1,5 +1,6 @@
 package com.lirxowo.taczcreativesupplement.network;
 
+import com.lirxowo.taczcreativesupplement.config.TaczSupplementConfig;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
@@ -44,7 +45,7 @@ public class CreativeRefitMessage {
                 if (player == null) {
                     return;
                 }
-                if (!player.isCreative()) {
+                if (!TaczSupplementConfig.isPlayerAllowed(player.isCreative())) {
                     return;
                 }
                 Inventory inventory = player.getInventory();
@@ -53,9 +54,7 @@ public class CreativeRefitMessage {
                 if (iGun == null) {
                     return;
                 }
-                ItemStack attachmentItem = AttachmentItemBuilder.create()
-                        .setId(message.attachmentId)
-                        .build();
+                ItemStack attachmentItem = AttachmentItemBuilder.create().setId(message.attachmentId).build();
                 if (iGun.allowAttachment(gunItem, attachmentItem)) {
                     ItemStack oldAttachment = iGun.getAttachment(gunItem, message.attachmentType);
                     iGun.installAttachment(gunItem, attachmentItem);

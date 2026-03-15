@@ -1,5 +1,6 @@
 package com.lirxowo.taczcreativesupplement.mixin;
 
+import com.lirxowo.taczcreativesupplement.config.TaczSupplementConfig;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.network.NetworkHandler;
@@ -27,7 +28,10 @@ public class ClientMessageUnloadAttachmentMixin {
             return;
         }
         ServerPlayer player = context.getSender();
-        if (player == null || !player.isCreative()) {
+        if (player == null) {
+            return;
+        }
+        if (!TaczSupplementConfig.isPlayerAllowed(player.isCreative())) {
             return;
         }
         ci.cancel();

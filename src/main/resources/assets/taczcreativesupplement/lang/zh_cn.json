@@ -1,0 +1,15 @@
+{
+  "screen.taczcreativesupplement.config.title": "TaCZ 创造模式附件补充",
+  "screen.taczcreativesupplement.config.subtitle": "附件补充功能设置",
+  "screen.taczcreativesupplement.config.section": "功能控制",
+  "option.taczcreativesupplement.enable": "启用功能",
+  "option.taczcreativesupplement.mode": "游戏模式",
+  "option.taczcreativesupplement.mode.creative": "仅创造模式",
+  "option.taczcreativesupplement.mode.survival": "仅生存模式",
+  "option.taczcreativesupplement.mode.both": "创造与生存模式",
+  "screen.taczcreativesupplement.status.enabled": "功能已启用",
+  "screen.taczcreativesupplement.status.disabled": "功能已禁用",
+  "screen.taczcreativesupplement.hint": "设置立即生效",
+  "gui.taczcreativesupplement.back_to_packs": "返回模组包列表",
+  "gui.taczcreativesupplement.pack_tooltip": "%s（%d 个配件）"
+}
