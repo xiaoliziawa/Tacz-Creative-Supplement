@@ -15,6 +15,7 @@ public class Taczcreativesupplement {
 
     public Taczcreativesupplement() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, TaczSupplementConfig.CLIENT_SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, TaczSupplementConfig.COMMON_SPEC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
     }
 
