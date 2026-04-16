@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -45,7 +46,8 @@ public class CreativeRefitMessage {
                 if (player == null) {
                     return;
                 }
-                if (!TaczSupplementConfig.isPlayerAllowed(player.isCreative())) {
+                GameType gameType = player.gameMode.getGameModeForPlayer();
+                if (!TaczSupplementConfig.isPlayerAllowed(player.serverLevel().getGameRules(), gameType)) {
                     return;
                 }
                 Inventory inventory = player.getInventory();

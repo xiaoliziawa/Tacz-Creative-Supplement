@@ -1,39 +1,50 @@
 package com.lirxowo.taczcreativesupplement.client.screen;
 
+import com.lirxowo.taczcreativesupplement.client.render.RoundedShaderRenderer;
 import com.lirxowo.taczcreativesupplement.config.TaczSupplementConfig;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public class ModConfigScreen extends Screen {
 
-    private static final int PANEL_W = 390;
-    private static final int PANEL_H = 270;
-    private static final int TITLE_H = 44;
+    private static final int DEFAULT_PANEL_W = 360;
+    private static final int DEFAULT_PANEL_H = 260;
+    private static final int TITLE_H = 40;
+    private static final float PANEL_RADIUS = 18.0F;
+    private static final int PANEL_MARGIN = 28;
 
-    private static final int BG_OUTER = 0xF00B1220;
-    private static final int BG_INNER_TL = 0xEE111D30;
-    private static final int BG_INNER_BR = 0xEE0C1524;
-    private static final int TITLE_BAR_TOP = 0xFF08101E;
-    private static final int TITLE_BAR_BOT = 0xFF0D1828;
-    private static final int EDGE_TOP = 0x55A8CCFF;
-    private static final int EDGE_SIDE = 0x20A8CCFF;
-    private static final int EDGE_BOTTOM = 0x15000000;
-    private static final int ACCENT_DIVIDER = 0x7033A8FF;
+    private static final int BG_OUTER = 0xCC07111D;
+    private static final int BG_INNER_TL = 0xEE13233A;
+    private static final int BG_INNER_BR = 0xEE0B1525;
+    private static final int TITLE_BAR_TOP = 0xF61B3558;
+    private static final int TITLE_BAR_BOT = 0xE6101E33;
+    private static final int EDGE = 0x885CB6FF;
+    private static final int ACCENT_DIVIDER = 0x7A40A8FF;
     private static final int ACCENT_DOT = 0xFF3F8FFF;
     private static final int ACCENT_DOT2 = 0xFF2E6FDD;
     private static final int TEXT_TITLE = 0xFFE8F0FF;
     private static final int TEXT_SUBTITLE = 0xFF7A90B0;
     private static final int TEXT_LABEL = 0xFFCCDDEE;
     private static final int GLOW_TOP = 0x1A8BB8FF;
-    private static final int BOTTOM_STRIP = 0x220A1020;
+    private static final int STATUS_BG = 0x2A15263F;
+    private static final int HINT_BG = 0x20111A2A;
 
     private final Screen previous;
-    private int px, py;
+    private int px;
+    private int py;
+    private int panelWidth;
+    private int panelHeight;
+    private int buttonWidth;
+    private int buttonHeight;
+    private int toggleY;
+    private int animationY;
+    private int modeY;
+    private int hintY;
+    private int statusY;
     private boolean enabled;
+    private boolean sprintJumpAnimationEnabled;
 
     public ModConfigScreen(Screen previous) {
         super(Component.translatable("screen.taczcreativesupplement.config.title"));
@@ -42,24 +53,44 @@ public class ModConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        px = (width - PANEL_W) / 2;
-        py = (height - PANEL_H) / 2;
+        panelWidth = Math.min(DEFAULT_PANEL_W, Math.max(300, width - PANEL_MARGIN * 2));
+        panelHeight = Math.min(DEFAULT_PANEL_H, Math.max(228, height - PANEL_MARGIN * 2));
+        panelWidth = Math.min(panelWidth, width - 12);
+        panelHeight = Math.min(panelHeight, height - 12);
+        px = (width - panelWidth) / 2;
+        py = (height - panelHeight) / 2;
         enabled = TaczSupplementConfig.ENABLE_CREATIVE_SUPPLEMENT.get();
+        sprintJumpAnimationEnabled = TaczSupplementConfig.ENABLE_SPRINT_JUMP_ANIMATION.get();
 
         int contentTop = py + TITLE_H;
-        int btnW = 280, btnH = 32;
-        int btnX = px + (PANEL_W - btnW) / 2;
+        buttonWidth = Math.min(280, panelWidth - 48);
+        buttonHeight = panelHeight <= 240 ? 28 : 30;
+        int buttonX = px + (panelWidth - buttonWidth) / 2;
+        toggleY = contentTop + 24;
+        animationY = toggleY + buttonHeight + 10;
+        modeY = animationY + buttonHeight + 10;
 
-        addRenderableWidget(new ToggleButton(btnX, contentTop + 30, btnW, btnH, Component.translatable("option.taczcreativesupplement.enable"), btn -> {
+        int doneWidth = Math.min(128, panelWidth - 96);
+        int doneHeight = 22;
+        int doneY = py + panelHeight - doneHeight - 12;
+        statusY = doneY - 18;
+        hintY = Math.min(modeY + buttonHeight + 12, statusY - 16);
+
+        addRenderableWidget(new ToggleButton(buttonX, toggleY, buttonWidth, buttonHeight, Component.translatable("option.taczcreativesupplement.enable"), btn -> {
             enabled = !enabled;
             TaczSupplementConfig.ENABLE_CREATIVE_SUPPLEMENT.set(enabled);
             btn.setToggled(enabled);
         }, enabled));
 
-        addRenderableWidget(new ModeCycleButton(btnX, contentTop + 70, btnW, btnH, Component.translatable("option.taczcreativesupplement.mode"), (btn, newVal) -> TaczSupplementConfig.GAME_MODE.set(newVal), TaczSupplementConfig.GAME_MODE.get()));
+        addRenderableWidget(new ToggleButton(buttonX, animationY, buttonWidth, buttonHeight, Component.translatable("option.taczcreativesupplement.sprint_jump_animation"), btn -> {
+            sprintJumpAnimationEnabled = !sprintJumpAnimationEnabled;
+            TaczSupplementConfig.ENABLE_SPRINT_JUMP_ANIMATION.set(sprintJumpAnimationEnabled);
+            btn.setToggled(sprintJumpAnimationEnabled);
+        }, sprintJumpAnimationEnabled));
 
-        int doneW = 120, doneH = 22;
-        addRenderableWidget(Button.builder(Component.translatable("gui.done"), btn -> onClose()).bounds(px + (PANEL_W - doneW) / 2, py + PANEL_H - 34, doneW, doneH).build());
+        addRenderableWidget(new ModeCycleButton(buttonX, modeY, buttonWidth, buttonHeight, Component.translatable("option.taczcreativesupplement.mode"), (btn, newVal) -> TaczSupplementConfig.GAME_MODE.set(newVal), TaczSupplementConfig.GAME_MODE.get()));
+
+        addRenderableWidget(new RoundedTextButton(px + (panelWidth - doneWidth) / 2, doneY, doneWidth, doneHeight, Component.translatable("gui.done"), btn -> onClose()));
     }
 
     @Override
@@ -72,54 +103,47 @@ public class ModConfigScreen extends Screen {
     }
 
     private void renderPanel(GuiGraphics g) {
-        RenderSystem.enableBlend();
-        int x = px, y = py, w = PANEL_W, h = PANEL_H;
+        int x = px;
+        int y = py;
+        int w = panelWidth;
+        int h = panelHeight;
+        int contentTop = py + TITLE_H;
+        int optionCardY = contentTop + 8;
+        int optionCardHeight = modeY + buttonHeight - optionCardY + 12;
 
-        g.fill(x, y, x + w, y + h, BG_OUTER);
-        g.fillGradient(x + 1, y + TITLE_H, x + w / 2, y + h - 1, BG_INNER_TL, BG_INNER_BR);
-        g.fillGradient(x + w / 2, y + TITLE_H, x + w - 1, y + h - 1, BG_INNER_BR, BG_INNER_BR);
-        g.fillGradient(x + 1, y + 1, x + w - 1, y + TITLE_H, TITLE_BAR_TOP, TITLE_BAR_BOT);
-        g.fillGradient(x + 2, y + TITLE_H, x + w - 2, y + TITLE_H + 10, GLOW_TOP, 0x00000000);
-        g.fill(x + 2, y + TITLE_H - 1, x + w - 2, y + TITLE_H, ACCENT_DIVIDER);
-        g.fillGradient(x + 1, y + h - 48, x + w - 1, y + h - 1, 0x00000000, BOTTOM_STRIP);
-
-        g.fill(x, y, x + w, y + 1, EDGE_TOP);
-        g.fill(x, y, x + 1, y + h, EDGE_SIDE);
-        g.fill(x + w - 1, y, x + w, y + h, EDGE_SIDE);
-        g.fill(x, y + h - 1, x + w, y + h, EDGE_BOTTOM);
-
-        g.fill(x, y, x + 1, y + 1, 0x00000000);
-        g.fill(x + w - 1, y, x + w, y + 1, 0x00000000);
-        g.fill(x, y + h - 1, x + 1, y + h, 0x00000000);
-        g.fill(x + w - 1, y + h - 1, x + w, y + h, 0x00000000);
-
-        g.fill(x + 1, y + 1, x + w - 1, y + 2, 0x18FFFFFF);
+        RoundedShaderRenderer.frame(g, x, y, w, h, PANEL_RADIUS, 2.0F, EDGE, BG_OUTER, BG_OUTER);
+        RoundedShaderRenderer.fillGradient(g, x + 3.0F, y + 3.0F, w - 6.0F, h - 6.0F, PANEL_RADIUS - 3.0F, BG_INNER_TL, BG_INNER_BR);
+        RoundedShaderRenderer.fillGradient(g, x + 8.0F, y + 8.0F, w - 16.0F, TITLE_H, PANEL_RADIUS - 7.0F, TITLE_BAR_TOP, TITLE_BAR_BOT);
+        RoundedShaderRenderer.fillGradient(g, x + 14.0F, optionCardY, w - 28.0F, optionCardHeight, 14.0F, 0x181B304E, 0x12111B2D);
+        RoundedShaderRenderer.fillGradient(g, x + 24.0F, hintY - 4.0F, w - 48.0F, 16.0F, 8.0F, HINT_BG, HINT_BG);
+        RoundedShaderRenderer.fillGradient(g, x + 18.0F, statusY - 5.0F, w - 36.0F, 18.0F, 10.0F, STATUS_BG, STATUS_BG);
+        RoundedShaderRenderer.fillGradient(g, x + 14.0F, y + TITLE_H - 2.0F, w - 28.0F, 8.0F, 4.0F, GLOW_TOP, 0x00000000);
+        RoundedShaderRenderer.fillGradient(g, x + 16.0F, y + TITLE_H - 1.0F, w - 32.0F, 2.0F, 1.0F, ACCENT_DIVIDER, ACCENT_DIVIDER);
 
         int dotY = y + (TITLE_H / 2) - 2;
-        g.fill(x + 12, dotY, x + 16, dotY + 4, ACCENT_DOT);
-        g.fill(x + 20, dotY, x + 24, dotY + 4, ACCENT_DOT2);
-        g.fill(x + 28, dotY, x + 32, dotY + 4, ACCENT_DOT);
-
-        RenderSystem.disableBlend();
+        RoundedShaderRenderer.fill(g, x + 12.0F, dotY, 4.0F, 4.0F, 2.0F, ACCENT_DOT);
+        RoundedShaderRenderer.fill(g, x + 20.0F, dotY, 4.0F, 4.0F, 2.0F, ACCENT_DOT2);
+        RoundedShaderRenderer.fill(g, x + 28.0F, dotY, 4.0F, 4.0F, 2.0F, ACCENT_DOT);
     }
 
     private void renderTitleBar(GuiGraphics g) {
-        int cx = px + PANEL_W / 2;
-        g.drawCenteredString(font, this.title, cx, py + 10, TEXT_TITLE);
-        g.drawCenteredString(font, Component.translatable("screen.taczcreativesupplement.config.subtitle"), cx, py + 24, TEXT_SUBTITLE);
+        int centerX = px + panelWidth / 2;
+        g.drawCenteredString(font, this.title, centerX, py + 10, TEXT_TITLE);
+        g.drawCenteredString(font, Component.translatable("screen.taczcreativesupplement.config.subtitle"), centerX, py + 22, TEXT_SUBTITLE);
     }
 
     private void renderContent(GuiGraphics g) {
-        int cx = px + PANEL_W / 2;
+        int centerX = px + panelWidth / 2;
         int top = py + TITLE_H;
 
-        g.drawCenteredString(font, Component.translatable("screen.taczcreativesupplement.config.section"), cx, top + 14, TEXT_LABEL);
+        g.drawCenteredString(font, Component.translatable("screen.taczcreativesupplement.config.section"), centerX, top + 14, TEXT_LABEL);
+        g.drawCenteredString(font, Component.translatable("screen.taczcreativesupplement.hint"), centerX, hintY, 0xFF8091AC);
 
         boolean on = TaczSupplementConfig.ENABLE_CREATIVE_SUPPLEMENT.get();
-        Component status = on ? Component.translatable("screen.taczcreativesupplement.status.enabled").withStyle(ChatFormatting.GREEN) : Component.translatable("screen.taczcreativesupplement.status.disabled").withStyle(ChatFormatting.RED);
-        g.drawCenteredString(font, status, cx, top + 114, 0xFFFFFFFF);
-
-        g.drawCenteredString(font, Component.translatable("screen.taczcreativesupplement.hint"), cx, top + 130, 0xFF3A4A60);
+        Component status = on
+                ? Component.translatable("screen.taczcreativesupplement.status.enabled").withStyle(ChatFormatting.GREEN)
+                : Component.translatable("screen.taczcreativesupplement.status.disabled").withStyle(ChatFormatting.RED);
+        g.drawCenteredString(font, status, centerX, statusY, 0xFFFFFFFF);
     }
 
     @Override

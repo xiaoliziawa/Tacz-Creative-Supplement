@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -56,10 +57,11 @@ public abstract class GunRefitScreenMixin extends Screen {
     @Inject(method = "addInventoryAttachmentButtons", at = @At("HEAD"), cancellable = true, remap = false)
     private void onAddInventoryAttachmentButtons(CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) {
+        if (mc.player == null || mc.gameMode == null) {
             return;
         }
-        if (!TaczSupplementConfig.isPlayerAllowed(mc.player.isCreative())) {
+        GameType gameType = mc.gameMode.getPlayerMode();
+        if (!TaczSupplementConfig.isPlayerAllowed(gameType)) {
             return;
         }
         ci.cancel();

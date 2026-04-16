@@ -1,14 +1,19 @@
 package com.lirxowo.taczcreativesupplement.config;
 
+import com.lirxowo.taczcreativesupplement.gamerule.ModGameRules;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.GameRules;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class TaczSupplementConfig {
+    private static volatile Boolean syncedGameRuleEnabled;
+    private static volatile GameModeOption syncedGameRuleMode;
 
-    // 给单人（包括局域网联机）用的配置文件
     private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec CLIENT_SPEC;
 
     public static final ForgeConfigSpec.BooleanValue ENABLE_CREATIVE_SUPPLEMENT;
+    public static final ForgeConfigSpec.BooleanValue ENABLE_SPRINT_JUMP_ANIMATION;
     public static final ForgeConfigSpec.EnumValue<GameModeOption> GAME_MODE;
 
     static {
@@ -18,19 +23,24 @@ public class TaczSupplementConfig {
                 .comment("Enable or disable the attachment supplement feature entirely.")
                 .define("enableCreativeSupplement", true);
 
+        ENABLE_SPRINT_JUMP_ANIMATION = CLIENT_BUILDER
+                .comment("Smooth the first-person sprint jump gun animation.")
+                .define("enableSprintJumpAnimation", true);
+
         GAME_MODE = CLIENT_BUILDER
                 .comment(
                         "Which game mode(s) the feature applies to.",
                         "CREATIVE = Creative mode only (default)",
                         "SURVIVAL = Survival mode only",
-                        "BOTH = Both Creative and Survival modes"
+                        "BOTH = Creative and Survival modes",
+                        "ADVENTURE = Adventure mode only",
+                        "ADVENTURE_CREATIVE = Adventure and Creative modes"
                 )
                 .defineEnum("gameMode", GameModeOption.CREATIVE);
 
         CLIENT_SPEC = CLIENT_BUILDER.build();
     }
 
-    // 给服务器用的配置文件
     private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec COMMON_SPEC;
 
@@ -41,7 +51,7 @@ public class TaczSupplementConfig {
         COMMON_BUILDER.comment(
                 "TaczCreativeSupplement Common Configuration",
                 "Used by dedicated servers where CLIENT config is not available.",
-                "On single-player / LAN, CLIENT config takes priority over this."
+                "On single-player / LAN, gamerules take priority once the server sync arrives."
         );
 
         COMMON_ENABLE = COMMON_BUILDER
@@ -53,27 +63,59 @@ public class TaczSupplementConfig {
                         "Which game mode(s) the feature applies to on the server.",
                         "CREATIVE = Creative mode only (default)",
                         "SURVIVAL = Survival mode only",
-                        "BOTH = Both Creative and Survival modes"
+                        "BOTH = Creative and Survival modes",
+                        "ADVENTURE = Adventure mode only",
+                        "ADVENTURE_CREATIVE = Adventure and Creative modes"
                 )
                 .defineEnum("gameMode", GameModeOption.CREATIVE);
 
         COMMON_SPEC = COMMON_BUILDER.build();
     }
 
-    public static boolean isPlayerAllowed(boolean isCreative) {
+    public static boolean isPlayerAllowed(GameType gameType) {
+        if (hasSyncedGameRuleState()) {
+            return checkConfig(syncedGameRuleEnabled, syncedGameRuleMode, gameType);
+        }
         if (CLIENT_SPEC.isLoaded()) {
-            return checkConfig(ENABLE_CREATIVE_SUPPLEMENT.get(), GAME_MODE.get(), isCreative);
+            return checkConfig(ENABLE_CREATIVE_SUPPLEMENT.get(), GAME_MODE.get(), gameType);
         }
         if (COMMON_SPEC.isLoaded()) {
-            return checkConfig(COMMON_ENABLE.get(), COMMON_GAME_MODE.get(), isCreative);
+            return checkConfig(COMMON_ENABLE.get(), COMMON_GAME_MODE.get(), gameType);
         }
-        return isCreative;
+        return gameType == GameType.CREATIVE;
     }
 
-    private static boolean checkConfig(boolean enabled, GameModeOption mode, boolean isCreative) {
+    public static boolean isPlayerAllowed(GameRules gameRules, GameType gameType) {
+        return checkConfig(
+                ModGameRules.isEnabled(gameRules),
+                ModGameRules.getGameMode(gameRules),
+                gameType
+        );
+    }
+
+    public static boolean isSprintJumpAnimationEnabled() {
+        if (!CLIENT_SPEC.isLoaded()) {
+            return true;
+        }
+        return ENABLE_SPRINT_JUMP_ANIMATION.get();
+    }
+
+    public static void updateSyncedGameRuleState(boolean enabled, GameModeOption mode) {
+        syncedGameRuleEnabled = enabled;
+        syncedGameRuleMode = mode;
+    }
+
+    public static void clearSyncedGameRuleState() {
+        syncedGameRuleEnabled = null;
+        syncedGameRuleMode = null;
+    }
+
+    public static boolean hasSyncedGameRuleState() {
+        return syncedGameRuleEnabled != null && syncedGameRuleMode != null;
+    }
+
+    private static boolean checkConfig(boolean enabled, GameModeOption mode, GameType gameType) {
         if (!enabled) return false;
-        if (mode == GameModeOption.CREATIVE) return isCreative;
-        if (mode == GameModeOption.SURVIVAL) return !isCreative;
-        return true; // BOTH
+        return mode.matches(gameType);
     }
 }

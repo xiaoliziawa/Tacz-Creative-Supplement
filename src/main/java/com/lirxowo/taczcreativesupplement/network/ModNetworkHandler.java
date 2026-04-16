@@ -24,5 +24,10 @@ public class ModNetworkHandler {
                 CreativeRefitMessage::decode,
                 CreativeRefitMessage::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(1, SyncGameRuleStateMessage.class,
+                SyncGameRuleStateMessage::encode,
+                SyncGameRuleStateMessage::decode,
+                SyncGameRuleStateMessage::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }

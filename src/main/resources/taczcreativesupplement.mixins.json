@@ -9,6 +9,7 @@
     "ClientMessageUnloadAttachmentMixin"
   ],
   "client": [
+    "FirstPersonRenderGunEventMixin",
     "GunRefitScreenMixin"
   ],
   "injectors": {

@@ -8,6 +8,7 @@ import com.tacz.guns.network.message.ClientMessageUnloadAttachment;
 import com.tacz.guns.network.message.ServerMessageRefreshRefitScreen;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
@@ -31,7 +32,8 @@ public class ClientMessageUnloadAttachmentMixin {
         if (player == null) {
             return;
         }
-        if (!TaczSupplementConfig.isPlayerAllowed(player.isCreative())) {
+        GameType gameType = player.gameMode.getGameModeForPlayer();
+        if (!TaczSupplementConfig.isPlayerAllowed(player.serverLevel().getGameRules(), gameType)) {
             return;
         }
         ci.cancel();

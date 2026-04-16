@@ -1,6 +1,6 @@
 package com.lirxowo.taczcreativesupplement.client.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.lirxowo.taczcreativesupplement.client.render.RoundedShaderRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,17 +17,20 @@ public class ToggleButton extends AbstractButton {
 
     private static final int PILL_W = 52;
     private static final int PILL_H = 22;
-
     private static final int KNOB_MARGIN = 3;
 
+    private static final int CARD_OUTLINE = 0x585DB5FF;
+    private static final int CARD_OUTLINE_HOVER = 0x8A7FD0FF;
+    private static final int CARD_TOP = 0x26161F2E;
+    private static final int CARD_BOTTOM = 0x20101928;
+    private static final int CARD_TOP_HOVER = 0x32213146;
+    private static final int CARD_BOTTOM_HOVER = 0x26152034;
     private static final int PILL_ON_TOP = 0xFF2D6ECC;
     private static final int PILL_ON_BOT = 0xFF1A4FA0;
     private static final int PILL_OFF_TOP = 0xFF2B2B3A;
     private static final int PILL_OFF_BOT = 0xFF1E1E2C;
     private static final int KNOB_ON = 0xFFDDEEFF;
     private static final int KNOB_OFF = 0xFF7788AA;
-    private static final int CARD_HOVER = 0x28FFFFFF;
-    private static final int CARD_NORMAL = 0x12FFFFFF;
     private static final int TEXT_ACTIVE = 0xFFEEEEFF;
     private static final int TEXT_INACTIVE = 0xFF888899;
 
@@ -55,47 +58,49 @@ public class ToggleButton extends AbstractButton {
 
     @Override
     protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partial) {
-        RenderSystem.enableBlend();
-
         Font font = Minecraft.getInstance().font;
-        int x = getX(), y = getY(), w = width, h = height;
-        int cardBg = isHoveredOrFocused() ? CARD_HOVER : CARD_NORMAL;
-        g.fill(x, y, x + w, y + h, cardBg);
-        int border = isHoveredOrFocused() ? 0x50A0C8FF : 0x20FFFFFF;
-        g.fill(x, y, x + w, y + 1, border);   // top
-        g.fill(x, y + h - 1, x + w, y + h, border);   // bottom
-        g.fill(x, y, x + 1, y + h, border);   // left
-        g.fill(x + w - 1, y, x + w, y + h, border);   // right
+        int x = getX();
+        int y = getY();
+        int w = width;
+        int h = height;
+        int border = isHoveredOrFocused() ? CARD_OUTLINE_HOVER : CARD_OUTLINE;
+        int topBg = isHoveredOrFocused() ? CARD_TOP_HOVER : CARD_TOP;
+        int bottomBg = isHoveredOrFocused() ? CARD_BOTTOM_HOVER : CARD_BOTTOM;
+
+        RoundedShaderRenderer.frame(g, x, y, w, h, 12.0F, 1.0F, border, topBg, bottomBg);
+        if (isHoveredOrFocused()) {
+            RoundedShaderRenderer.fillGradient(g, x + 1.0F, y + 1.0F, w - 2.0F, h * 0.45F, 11.0F, 0x20FFFFFF, 0x00000000);
+        }
+
         int labelColor = isActive() ? TEXT_ACTIVE : TEXT_INACTIVE;
         int labelY = y + (h - 8) / 2;
         g.drawString(font, getMessage(), x + 12, labelY, labelColor, false);
+
         int pillX = x + w - PILL_W - 10;
         int pillY = y + (h - PILL_H) / 2;
         int pillTop = toggled ? PILL_ON_TOP : PILL_OFF_TOP;
-        int pillBot = toggled ? PILL_ON_BOT : PILL_OFF_BOT;
-        g.fillGradient(pillX, pillY, pillX + PILL_W, pillY + PILL_H / 2, pillTop, pillTop);
-        g.fillGradient(pillX, pillY + PILL_H / 2, pillX + PILL_W, pillY + PILL_H, pillTop, pillBot);
-        g.fill(pillX, pillY, pillX + PILL_W, pillY + 1, 0x25FFFFFF);
-        g.fill(pillX, pillY + PILL_H - 1, pillX + PILL_W, pillY + PILL_H, 0x20000000);
-        g.fill(pillX, pillY, pillX + 1, pillY + PILL_H, 0x15FFFFFF);
-        g.fill(pillX + PILL_W - 1, pillY, pillX + PILL_W, pillY + PILL_H, 0x10000000);
+        int pillBottom = toggled ? PILL_ON_BOT : PILL_OFF_BOT;
+        RoundedShaderRenderer.frame(g, pillX, pillY, PILL_W, PILL_H, PILL_H / 2.0F, 1.0F, 0x38FFFFFF, pillTop, pillBottom);
+
         int knobSize = PILL_H - KNOB_MARGIN * 2;
         int knobX = toggled ? pillX + PILL_W - knobSize - KNOB_MARGIN : pillX + KNOB_MARGIN;
         int knobY = pillY + KNOB_MARGIN;
-
-        g.fill(knobX + 1, knobY + 1, knobX + knobSize + 1, knobY + knobSize + 1, 0x40000000);
         int knobColor = toggled ? KNOB_ON : KNOB_OFF;
-        g.fill(knobX, knobY, knobX + knobSize, knobY + knobSize, knobColor);
-        g.fill(knobX, knobY, knobX + knobSize, knobY + 1, 0x40FFFFFF);
-        g.fill(knobX, knobY, knobX + 1, knobY + knobSize, 0x25FFFFFF);
+        RoundedShaderRenderer.fillGradient(g, knobX, knobY, knobSize, knobSize, knobSize / 2.0F, brighten(knobColor, 16), knobColor);
 
         String status = toggled ? "ON" : "OFF";
         int statusX = toggled ? pillX + KNOB_MARGIN + 2 : pillX + knobSize + KNOB_MARGIN * 2 + 2;
         int statusY = pillY + (PILL_H - 8) / 2;
         int statusColor = toggled ? 0xA0CCE8FF : 0x70889AAA;
         g.drawString(font, status, statusX, statusY, statusColor, false);
+    }
 
-        RenderSystem.disableBlend();
+    private static int brighten(int argb, int amount) {
+        int a = (argb >> 24) & 0xFF;
+        int r = Math.min(255, ((argb >> 16) & 0xFF) + amount);
+        int g = Math.min(255, ((argb >> 8) & 0xFF) + amount);
+        int b = Math.min(255, (argb & 0xFF) + amount);
+        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
     @Override
