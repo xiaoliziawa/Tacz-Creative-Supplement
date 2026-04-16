@@ -10,7 +10,8 @@
   ],
   "client": [
     "FirstPersonRenderGunEventMixin",
-    "GunRefitScreenMixin"
+    "GunRefitScreenMixin",
+    "InnerThirdPersonManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

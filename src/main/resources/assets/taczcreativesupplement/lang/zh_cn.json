@@ -13,6 +13,7 @@
   "screen.taczcreativesupplement.status.enabled": "功能当前已启用",
   "screen.taczcreativesupplement.status.disabled": "功能当前已禁用",
   "screen.taczcreativesupplement.hint": "设置修改后立即生效",
+  "message.taczcreativesupplement.wall_blocked": "枪口离墙体太近，无法开火",
   "gamerule.taczCreativeSupplementEnabled": "是否启用 TaCZ 创造模式附件补充功能。",
   "gamerule.taczCreativeSupplementMode": "TaCZ 创造模式附件补充适用模式。0=仅创造，1=仅生存，2=创造与生存，3=仅冒险，4=冒险与创造。",
   "gui.taczcreativesupplement.back_to_packs": "返回模组包列表",

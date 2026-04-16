@@ -16,6 +16,8 @@ The mod also adds a few quality-of-life features:
 
 5. Smoother first-person sprint-jump gun animation, with softer takeoff and landing transitions while sprinting
 
+6. Wall collision handling inspired by Tarkov: guns will be pushed aside when too close to walls, and firing is blocked until there is enough space again
+
 This improves compatibility and makes managing attachments from multiple TACZ addons much easier.
 
 ## Gamerule Usage

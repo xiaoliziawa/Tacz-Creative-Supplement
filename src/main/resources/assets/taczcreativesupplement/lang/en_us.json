@@ -13,6 +13,7 @@
   "screen.taczcreativesupplement.status.enabled": "Feature is currently enabled",
   "screen.taczcreativesupplement.status.disabled": "Feature is currently disabled",
   "screen.taczcreativesupplement.hint": "Changes take effect immediately",
+  "message.taczcreativesupplement.wall_blocked": "Too close to the wall to fire",
   "gamerule.taczCreativeSupplementEnabled": "Whether the TaCZ creative supplement feature is enabled.",
   "gamerule.taczCreativeSupplementMode": "TaCZ creative supplement mode. 0 = Creative only, 1 = Survival only, 2 = Creative and Survival, 3 = Adventure only, 4 = Adventure and Creative.",
   "gui.taczcreativesupplement.back_to_packs": "Back to Mod Packs",
