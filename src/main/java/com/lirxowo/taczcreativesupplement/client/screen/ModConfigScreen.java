@@ -56,7 +56,7 @@ public class ModConfigScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float delta) {
-        renderBackground(g);
+        renderBackground(g, mx, my, delta);
         renderPanel(g);
         renderTitleBar(g);
         renderContent(g);

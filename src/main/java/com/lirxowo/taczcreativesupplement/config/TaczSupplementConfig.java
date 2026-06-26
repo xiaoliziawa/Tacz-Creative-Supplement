@@ -1,15 +1,15 @@
 package com.lirxowo.taczcreativesupplement.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class TaczSupplementConfig {
 
     // 给单人（包括局域网联机）用的配置文件
-    private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec CLIENT_SPEC;
+    private static final ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec CLIENT_SPEC;
 
-    public static final ForgeConfigSpec.BooleanValue ENABLE_CREATIVE_SUPPLEMENT;
-    public static final ForgeConfigSpec.EnumValue<GameModeOption> GAME_MODE;
+    public static final ModConfigSpec.BooleanValue ENABLE_CREATIVE_SUPPLEMENT;
+    public static final ModConfigSpec.EnumValue<GameModeOption> GAME_MODE;
 
     static {
         CLIENT_BUILDER.comment("TaczCreativeSupplement Client Configuration");
@@ -31,11 +31,11 @@ public class TaczSupplementConfig {
     }
 
     // 给服务器用的配置文件
-    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec COMMON_SPEC;
+    private static final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec COMMON_SPEC;
 
-    public static final ForgeConfigSpec.BooleanValue COMMON_ENABLE;
-    public static final ForgeConfigSpec.EnumValue<GameModeOption> COMMON_GAME_MODE;
+    public static final ModConfigSpec.BooleanValue COMMON_ENABLE;
+    public static final ModConfigSpec.EnumValue<GameModeOption> COMMON_GAME_MODE;
 
     static {
         COMMON_BUILDER.comment(

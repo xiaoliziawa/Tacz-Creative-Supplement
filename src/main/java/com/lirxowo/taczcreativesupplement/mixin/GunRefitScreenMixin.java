@@ -7,7 +7,6 @@ import com.lirxowo.taczcreativesupplement.client.screen.BackButton;
 import com.lirxowo.taczcreativesupplement.client.screen.PackSelectButton;
 import com.lirxowo.taczcreativesupplement.config.TaczSupplementConfig;
 import com.lirxowo.taczcreativesupplement.network.CreativeRefitMessage;
-import com.lirxowo.taczcreativesupplement.network.ModNetworkHandler;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
@@ -22,6 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -195,7 +195,7 @@ public abstract class GunRefitScreenMixin extends Screen {
             CreativeAttachmentSlot slot = new CreativeAttachmentSlot(startX, currentY, displayItem, b -> {
                 SoundPlayManager.playerRefitSound(displayItem, player, SoundManager.INSTALL_SOUND);
                 CreativeRefitMessage message = new CreativeRefitMessage(attachmentId, inventory.selected, currentType);
-                ModNetworkHandler.CHANNEL.sendToServer(message);
+                PacketDistributor.sendToServer(message);
             });
             this.addRenderableWidget(slot);
             slotIndex++;
