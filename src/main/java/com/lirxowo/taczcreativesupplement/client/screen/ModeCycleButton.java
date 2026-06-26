@@ -16,13 +16,13 @@ public class ModeCycleButton extends AbstractButton {
         void onChange(ModeCycleButton button, GameModeOption newValue);
     }
 
-    private static final int BADGE_CREATIVE = 0xFF1E5AAA;
-    private static final int BADGE_SURVIVAL = 0xFF1E8844;
-    private static final int BADGE_BOTH = 0xFF6633AA;
+    private static final int BADGE_CREATIVE = 0xFF3A6A3A;
+    private static final int BADGE_SURVIVAL = 0xFF6A5A2A;
+    private static final int BADGE_BOTH = 0xFF4A4A5A;
 
-    private static final int CARD_HOVER = 0x28FFFFFF;
-    private static final int CARD_NORMAL = 0x12FFFFFF;
-    private static final int TEXT_COLOR = 0xFFEEEEFF;
+    private static final int CARD_HOVER = 0x30FFFFFF;
+    private static final int CARD_NORMAL = 0x18FFFFFF;
+    private static final int TEXT_COLOR = 0xFFD0D0D0;
 
     private GameModeOption value;
     private final OnChange onChange;
@@ -56,31 +56,28 @@ public class ModeCycleButton extends AbstractButton {
 
         g.fill(x, y, x + w, y + h, isHoveredOrFocused() ? CARD_HOVER : CARD_NORMAL);
 
-        int border = isHoveredOrFocused() ? 0x50A0C8FF : 0x20FFFFFF;
+        int border = isHoveredOrFocused() ? 0x50AAAAAA : 0x20FFFFFF;
         g.fill(x, y, x + w, y + 1, border);
         g.fill(x, y + h - 1, x + w, y + h, border);
         g.fill(x, y, x + 1, y + h, border);
         g.fill(x + w - 1, y, x + w, y + h, border);
 
-        g.drawString(font, getMessage(), x + 12, y + (h - 8) / 2, TEXT_COLOR, false);
+        g.drawString(font, getMessage(), x + 8, y + (h - 8) / 2, TEXT_COLOR, false);
 
         Component valueText = getValueText();
         int textW = font.width(valueText);
-        int padH = 8;
-        int padV = 4;
+        int padH = 6;
+        int padV = 3;
         int badgeW = textW + padH * 2;
         int badgeH = 8 + padV * 2;
-        int badgeX = x + w - badgeW - 10;
+        int badgeX = x + w - badgeW - 8;
         int badgeY = y + (h - badgeH) / 2;
 
         int bgColor = getBadgeColor();
-        if (isHoveredOrFocused()) bgColor = brighten(bgColor, 0x1A);
+        if (isHoveredOrFocused()) bgColor = brighten(bgColor, 0x15);
         g.fill(badgeX, badgeY, badgeX + badgeW, badgeY + badgeH, bgColor);
 
-        g.fill(badgeX, badgeY, badgeX + badgeW, badgeY + 1, 0x30FFFFFF);
-        g.fill(badgeX, badgeY + badgeH - 1, badgeX + badgeW, badgeY + badgeH, 0x20000000);
-
-        g.drawString(font, valueText, badgeX + padH, badgeY + padV, 0xFFEEEEFF, false);
+        g.drawString(font, valueText, badgeX + padH, badgeY + padV, 0xFFD0D0D0, false);
 
         RenderSystem.disableBlend();
     }

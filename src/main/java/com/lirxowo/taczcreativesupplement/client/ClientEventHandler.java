@@ -5,7 +5,8 @@ import com.lirxowo.taczcreativesupplement.client.screen.ModConfigScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -14,7 +15,8 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        ModLoadingContext.get().registerExtensionPoint(
+        ModContainer container = ModList.get().getModContainerById(Taczcreativesupplement.MODID).orElseThrow();
+        container.registerExtensionPoint(
                 ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory(
                         (mc, previousScreen) -> new ModConfigScreen(previousScreen)
