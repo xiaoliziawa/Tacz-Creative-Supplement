@@ -11,8 +11,9 @@ import java.util.Optional;
 public class ModNetworkHandler {
     private static final String VERSION = "1.0";
 
+    @SuppressWarnings("removal")
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            ResourceLocation.fromNamespaceAndPath(Taczcreativesupplement.MODID, "network"),
+            new ResourceLocation(Taczcreativesupplement.MODID, "network"),
             () -> VERSION,
             VERSION::equals,
             VERSION::equals
